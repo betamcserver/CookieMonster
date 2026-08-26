@@ -1,6 +1,6 @@
 name: CookieMonster
 main: com.pi.coelho.CookieMonster.CookieMonster
-version: 1.6.3
+version: ${project.version}
 authors: [jascotty2, Coelho]
 commands:
   cookiemonster:

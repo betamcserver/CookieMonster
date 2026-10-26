@@ -2,7 +2,7 @@ package com.pi.coelho.CookieMonster;
 
 import java.util.Arrays;
 import java.util.HashMap;
-import org.bukkit.Location;
+
 import org.bukkit.Server;
 import org.bukkit.craftbukkit.entity.CraftWolf;
 import org.bukkit.entity.AnimalTamer;
@@ -123,15 +123,6 @@ public class CMEntityListener extends EntityListener {
 				attacks.get(event.getEntity().getEntityId()).rewardKill(event);
 			}
 			attacks.remove(event.getEntity().getEntityId());
-		} else if (CookieMonster.config.globalCampTrackingEnabled) {
-			Location loc = event.getEntity().getLocation();
-			CookieMonster.killTracker.addKill(loc);
-			if (CookieMonster.killTracker.numKills(loc,
-					CookieMonster.config.deltaX, CookieMonster.config.deltaY,
-					CookieMonster.config.campTrackingTimeout) > CookieMonster.config.campKills) {
-				event.getDrops().clear();
-				return;
-			}
 		}
 	}
 
@@ -157,22 +148,19 @@ public class CMEntityListener extends EntityListener {
 
 		public void rewardKill(EntityDeathEvent event) {
 			if (handleKill) {
-				if (CookieMonster.config.campTrackingEnabled) {
-					Location loc = event.getEntity().getLocation();
-					CookieMonster.killTracker.addKill(loc);
-//                    System.out.println("kill added, bringing total about " + loc + " to " + CookieMonster.killTracker.numKills(loc,
-//                            CookieMonster.config.deltaX, CookieMonster.config.deltaY,
-//                            CookieMonster.config.campTrackingTimeout));
-					if (CookieMonster.killTracker.numKills(loc,
-							CookieMonster.config.deltaX, CookieMonster.config.deltaY,
-							CookieMonster.config.campTrackingTimeout) > CookieMonster.config.campKills) {
-						if (lastAttackPlayer != null) {
-							lastAttackPlayer.sendMessage(CMConfig.messages.get("nocampingreward"));
+				if (CookieMonster.config.killTrackingEnabled) {
+					int entityId = event.getEntity().getEntityId();
+					if (attacks.containsKey(entityId)) {
+						MonsterAttack attack = attacks.get(entityId);
+						if (attack.lastAttackPlayer != null) {
+							if (CookieMonster.killTracker.isExceeded(attack.lastAttackPlayer)) {
+								lastAttackPlayer.sendMessage(CMConfig.messages.get("nocampingreward"));
+								if (CookieMonster.config.killTrackingDisableDrops) {
+									event.getDrops().clear();
+								}
+								return;
+							}
 						}
-						if (CookieMonster.config.disableCampingDrops) {
-							event.getDrops().clear();
-						}
-						return;
 					}
 				}
 				if (lastAttackPlayer != null) {

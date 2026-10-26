@@ -5,6 +5,7 @@ import com.sk89q.worldedit.bukkit.WorldEditPlugin;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import org.bukkit.Bukkit;
 import org.bukkit.Server;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
@@ -28,7 +29,7 @@ public class CookieMonster extends JavaPlugin {
     private static CMRewardHandler rewardHandler = null;
 	private static CMEcon economyPluginListener = new CMEcon();
     protected static CMRegions regions = null;
-    protected static CMCampTracker killTracker = null;
+    protected static CMAccountTracker killTracker = null;
     private static WorldEditPlugin worldEdit = null;
 
     @Override
@@ -82,9 +83,8 @@ public class CookieMonster extends JavaPlugin {
         blockListener = new CMBlockListener();
         rewardHandler = new CMRewardHandler();
 
-        if (config.campTrackingEnabled
-				|| config.globalCampTrackingEnabled) {
-            killTracker = new CMCampTracker();
+        if (config.killTrackingEnabled) {
+            killTracker = new CMAccountTracker();
         }
 
         // Event Registration
@@ -103,6 +103,14 @@ public class CookieMonster extends JavaPlugin {
         // Console Detail
         Log(" v" + pdfFile.getVersion() + " loaded successfully.");
         Log(" Developed by: " + pdfFile.getAuthors());
+
+        Bukkit.getScheduler()
+            .scheduleSyncRepeatingTask(
+                this,
+                () -> killTracker.clear(),
+                0,
+                config.killTrackingTimespanSeconds * 20L
+            );
     }
 
     @Override
@@ -110,9 +118,10 @@ public class CookieMonster extends JavaPlugin {
         if (regions != null) {
             regions.globalRegionManager.unload();
         }
-        if (killTracker != null) {
-            killTracker.save();
-        }
+        // was a complete no-op anyway :)
+//        if (killTracker != null) {
+//            killTracker.save();
+//        }
     }
 
     @Override
@@ -125,15 +134,8 @@ public class CookieMonster extends JavaPlugin {
             if (args.length == 1 && args[0].equalsIgnoreCase("reload")) {
                 if (!config.load()) {
                     sender.sendMessage("Reload Failed!");
-                } else {
-                    if ((config.campTrackingEnabled || config.globalCampTrackingEnabled)
-						&& killTracker == null) {
-                        killTracker = new CMCampTracker();
-                    } else if ((config.campTrackingEnabled || config.globalCampTrackingEnabled)
-						&& killTracker != null) {
-                        //todo:save
-                        killTracker = null;
-                    }
+                } else if ((config.killTrackingEnabled) && killTracker == null) {
+                    killTracker = new CMAccountTracker();
                 }
                 sender.sendMessage("Settings Reloaded");
             } else if (args.length >= 1 && args[0].equalsIgnoreCase("region")) {

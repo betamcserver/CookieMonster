@@ -31,25 +31,16 @@ settings:
     # if the players who die pay the killer (assuming has enough)
     playerPaysReward: true
 
-#spawn camp tracking occurs when a player kills a monster
-spwanCampTracking:
+# tracking occurs when a player kills a monster
+killTracking:
     # if enabled, there are no rewards (or drops) after the threshold is passed
     enabled: false
-    # if global is enabled, will apply camp tracking to "natural" deaths
-    #   this would allow monsters to drop items naturally, but disable monster killing machines
-    #   (ignores player disableDrops setting: all drops are disabled if threshold passed)
-    global: false
     # if suspected camping kills won't drop items
     disableDrops: true
-    # elevation change max
-    deltaY: 5
-    # square about center (distance from center to edge)
-    deltaX: 20
-    # time before a kill is no longer counted against tracking
-    #   positive integer values only, units being m(inutes) h(hours) d(ays) w(eeks) M(onths) (default: m)
-    timeout: 20m
-    # max kills in the area before counted as spawn camping
-    campKills: 50
+    # maximum amount of money allowed in a specific timespan
+    limit: 10000
+    # timespan in seconds after which the tracking will be reset for all players
+    timespanSeconds: 86400 # 24h
 
 # any LivingEntity listed here can have it's own rewards
 # can give a range for economy reward ( min-max )
@@ -150,7 +141,7 @@ messages:
     victimpay: "&f <player>&c took &f<amount>&c from you when you died"
     victimprotection: "&f <player>&a payed you &f<amount>&a as penalty for killing you"
     # this is for when a reward is withheld for suspected spawn camping
-    nocampingreward: "&a No more rewards avaliable for this area.. Try again later"
+    nocampingreward: "&a No more rewards available for your account... Try again later!"
     
     # penalized for killing a monster (if coin range is negative)
     # <amount>  how much removed from account
@@ -182,4 +173,3 @@ messages:
     itemnorewardMonster: "&c there is no reward for killing a &f<monster>&c with a &f<item>"
     itemnorewardCreature: 
     itemnorewardPlayer:
-

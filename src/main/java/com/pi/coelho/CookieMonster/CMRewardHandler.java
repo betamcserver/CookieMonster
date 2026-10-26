@@ -118,6 +118,7 @@ public class CMRewardHandler {
 		}
 		try {
 			double amount = CookieMonster.config.Monster_Drop[m].getCoinReward(itemId);
+			CookieMonster.killTracker.add(p, amount);
 			if (CookieMonster.config.intOnly) {
 				amount = Math.round(amount);
 			}

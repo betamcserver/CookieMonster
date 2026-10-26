@@ -6,7 +6,7 @@
 
     <groupId>com.jascotty2</groupId>
     <artifactId>CookieMonster</artifactId>
-    <version>1.7.0</version>
+    <version>1.8.0</version>
 
     <properties>
         <java.version>25</java.version>

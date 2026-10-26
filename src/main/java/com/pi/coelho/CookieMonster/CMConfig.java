@@ -43,10 +43,11 @@ public class CMConfig {
 	protected ArrayList<String> disabledWorlds = new ArrayList<String>();
 	// messages
 	public static HashMap<String, String> messages = new HashMap<String, String>();
-	// spawn camping settings
-	public boolean campTrackingEnabled = false,
-			disableCampingDrops = true,
-			globalCampTrackingEnabled = false;
+	// camping settings
+	public boolean killTrackingEnabled = false;
+	public int killTrackingLimit = 10_000;
+	public int killTrackingTimespanSeconds = 60 * 60 * 24;
+	public boolean killTrackingDisableDrops = true;
 	public int deltaY = 5, deltaX = 20, campKills = 50;
 	public long campTrackingTimeout = 20 * 60000;
 	// PvP settings
@@ -77,7 +78,7 @@ public class CMConfig {
 		messages.put("victimpay", "&f <player>&c took &f<amount>&c from you when you died");
 		messages.put("victimprotection", "&f <player>&a payed you &f<amount>&a as penalty for killing you");
 
-		messages.put("nocampingreward", "&a No more rewards avaliable for this area.. Try again later");
+		messages.put("nocampingreward", "&a No more rewards available for your account... Try again later!");
 
 		messages.put("penalty", "&c You are penalized &f<amount>&c for killing the &f<monster>");
 		messages.put("itempenalty", "&c You are penalized &f<amount>&c for killing the &f<monster>&c with a &f<item>");
@@ -128,17 +129,13 @@ public class CMConfig {
 				playerPaysReward = n.getBoolean("playerPaysReward", playerPaysReward);
 			}
 
-			if (config.getNode("spwanCampTracking") != null) {
-				ConfigurationNode n = config.getNode("spwanCampTracking");
-				campTrackingEnabled = n.getBoolean("enabled", campTrackingEnabled);
-				globalCampTrackingEnabled = n.getBoolean("global", globalCampTrackingEnabled);
-				disableCampingDrops = n.getBoolean("disableDrops", disableCampingDrops);
-				deltaY = n.getInt("deltaY", deltaY);
-				deltaX = n.getInt("deltaX", deltaX);
-				campKills = n.getInt("campKills", campKills);
-				String t = n.getString("timeout");
-				if (t != null) {
-					campTrackingTimeout = CheckInput.GetBigInt_TimeSpanInSec(t, 'm').longValue() * 1000;
+			if (config.getNode("killTracking") != null) {
+				ConfigurationNode n = config.getNode("killTracking");
+				if (n != null) {
+					killTrackingEnabled = n.getBoolean("enabled", killTrackingEnabled);
+					killTrackingDisableDrops = n.getBoolean("disableDrops", killTrackingDisableDrops);
+					killTrackingLimit = n.getInt("limit", killTrackingLimit);
+					killTrackingTimespanSeconds = n.getInt("timespanSeconds", killTrackingTimespanSeconds);
 				}
 			}
 
